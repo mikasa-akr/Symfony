@@ -144,6 +144,36 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         // returns an array of associative arrays (i.e. a raw data set)
         return $resultSet->fetchAllAssociative();
     }
+    public function delete($id): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+    
+        $sql = '
+            DELETE
+            FROM amis a
+            WHERE a.utilisateur_id = :id AND a.status = :status
+        ';
+    
+        $resultSet = $conn->executeQuery($sql, ['id' => $id, 'status' => 'invite']);
+        
+        // returns an array of associative arrays (i.e. a raw data set)
+        return $resultSet->fetchAllAssociative();
+    }
+    public function confirme($id)
+    {
+        $conn = $this->getEntityManager()->getConnection();
+    
+        $sql = '
+            UPDATE amis
+            SET status = :state
+            WHERE utilisateur_id = :id
+        ';
+    
+        $resultSet = $conn->executeQuery($sql, ['id' => $id, 'state' => 'Amis']);
+        
+        // If you want to return a result or perform additional actions, you can modify the method accordingly.
+        // For example, you can return $resultSet or perform additional database operations.
+    }
     
     
 

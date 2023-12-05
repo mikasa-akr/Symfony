@@ -64,27 +64,20 @@ public function request(Security $security,UserRepository $userRepository,Reques
         'friends'=>$friends,
     ]);
 }
-#[Route('/request/confirme', name: 'app_member_request_confirme', methods: ['GET', 'POST'])]
-public function confirme(Security $security,EntityManagerInterface $entityManager, Request $request, AmisRepository $userRepository): Response
-{
+#[Route('/request/confirme', name: 'app_member_request_confirme', methods: ['POST'])]
+public function confirme(Security $security,EntityManagerInterface $entityManager, Request $request, UserRepository $userRepository): Response
+{   
     $utilisateur=$security->getUser()->getUserIdentifier();
-    $user=$userRepository->findOneBy(['name'=>$utilisateur]);
-    $amis=$user->getAmis();
-    $entityManager->persist($amis);
-    $entityManager->flush();
+    $user=$userRepository->findOneBy(['name' =>$utilisateur]);
+    $user=$userRepository->confirme($user->getId());
     return $this->redirectToRoute('app_member_home',[], Response::HTTP_SEE_OTHER);
-    
 }
 #[Route('/request/annuler/', name: 'app_member_request_annuler', methods: ['POST'])]
 public function delete(Security $security,UserRepository $userRepository,Request $request,EntityManagerInterface $entityManager): Response
 {
-    $ami=new Amis();
-    $utilisateur=$security->getUser()->getUserIdentifier();
-    $user=$userRepository->findOneBy(['name'=>$utilisateur]);
-    $amis=$user->removeAmi($ami);
-        $entityManager->remove($ami);
-        $entityManager->flush();
-
+    $utilisateur = $security->getUser()->getUserIdentifier();
+    $user = $userRepository->findOneBy(['name' => $utilisateur]);
+    $amis=$userRepository->delete($user->getId());
     return $this->redirectToRoute('app_member_home', [], Response::HTTP_SEE_OTHER);
 }
 
